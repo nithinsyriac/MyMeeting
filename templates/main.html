@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title> Main </title>
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 20px;
+    }
+
+    .avatar {
+        vertical-align: middle;
+        width: 60px;
+        height: 60px;
+        
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div style="background-color: black; padding: 10px;">
+<button style="float: left; padding: 10px;" onclick="location.href='/logout'">Logout</button>
+<br />
+<br />
+<div style="border: 1px solid black;background-color: #B2BABB; padding: 30px; text-align: center;">
+    <h1> &nbsp Username: {{username}}</h1>
+</div>
+</div>
+<br />
+
+<div style="border: 1px solid black;background-color: #B2BABB; padding: 30px; text-align: center;">
+    <h3>&nbsp; Joined meetings:</h3>
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Created by</th>
+                <th scope="col">Location</th>
+                <th scope="col">Date</th>
+                <th scope="col">Image</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in my_meetings %}
+            {% set title = (result["sort_key"])[5:] %}
+
+            <form action='/remove' method='POST'>
+                <input type="hidden" name="music" value="{{ result.sort_key }}" />
+                <tr>
+                    <td>{{title}}</td>
+                    <td>{{result["createdby"]}}</td>
+                    <td>{{result["location"]}}</td>
+                    <td>{{result["dateTime"]}}</td>
+                    <td><img src={{result.img_url}} alt="Avatar" class="avatar"></td>
+                </tr>
+            </form>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br />
+<div>
+    <h3>&nbsp; Add Meeting</h3>
+    <form action='/addMeeting' method='POST' enctype="multipart/form-data">
+        <label for="title">Title: </label>
+        <input type="text"   name='title' id='title' required>
+        &nbsp;
+        <label for="location">Location: </label>
+        <input type="text"   name='location' id='location' required>
+        &nbsp;
+        <label for="date">Date and time: </label>
+        <input type="datetime-local"  name='date' id='date' required>
+        &nbsp;
+        <label for="limit"> Limit: </label>
+        <input type="number"  name='limit' id='limit' required>
+        &nbsp; <br>
+        <label for="meeting_image">&nbsp; Choose Photo:</label>
+        &nbsp; <input name="meeting_image" type="file" value="file" accept="image/*" >
+        <button type="submit" >Add</button>
+    </form>
+
+</div>
+
+<div style="border: 1px solid black;background-color: #B2BABB; padding: 30px; text-align: center;">
+    <h3>&nbsp; Query Meeting:</h3>
+    <form action='/searchMeeting' method='POST'>
+        <label for="location">Location: </label>
+        <input type="text"   name='location' id='location'>
+        &nbsp;
+        <button type="submit" >Search</button>
+    </form>
+    {% if message %}
+    <p style="color: black; font-size: 25px;">{{message}}</p>
+    {% else %}
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Created by</th>
+                <th scope="col">Location</th>
+                <th scope="col">Date</th>
+                <th scope="col">Image</th>
+                <th scope="col">Join</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in meetings %}
+            <form action='/join' method='POST'>
+                {% set meeting_title = (result["sort_key"])[6:] %}
+                {% set host_email = (result["partition_key"])[5:] %}
+
+                <input type="hidden" name="user" value="{{ result.username }}" />
+                <input type="hidden" name="join_title" value="{{ meeting_title }}" />
+                <input type="hidden" name="join_host" value="{{ host_email }}" />
+
+                <tr>
+                    <td >{{meeting_title}}</td>
+                    <td name="user">{{result["username"]}}</td>
+                    <td>{{result["location"]}}</td>
+                    <td>{{result["dateTime"]}}</td>
+                    <td><img src={{result.img_url}} alt="Avatar" class="avatar"></td>
+
+                    <td><button type="submit" style="color: black;">Join</button></td>
+                </tr>
+            </form>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+
+{% endblock %}
