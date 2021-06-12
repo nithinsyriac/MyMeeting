@@ -10,6 +10,8 @@ import json
 application = Flask(__name__)
 application.secret_key = "secret key"
 app=application
+os.environ['AWS_DEFAULT_REGION'] = 'ap-southeast-2'
+
 
 dynamodb = boto3.resource('dynamodb')
 loginTable = dynamodb.Table('login')
