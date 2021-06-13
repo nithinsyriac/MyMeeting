@@ -16,8 +16,6 @@ os.environ['AWS_DEFAULT_REGION'] = 'ap-southeast-2'
 dynamodb = boto3.resource('dynamodb')
 loginTable = dynamodb.Table('login')
 MeetingTable = dynamodb.Table('Meeting')
-joinedTable = dynamodb.Table('Joined')
-
 
 s3 = boto3.resource('s3')
 bucket_name_to_upload_image_to = 's3793275-assignment3'
@@ -41,25 +39,72 @@ def login():
         return redirect("/main")
 
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/searchMeeting', methods=['GET', 'POST'])
+def search():
     if request.method == 'GET':
-        return render_template('register.html', error = "")
-    elif request.method == 'POST':
-        email_id = request.form["email"]
-        username = request.form["user_name"]
-        password = request.form["password"]
-        if(check_user(email_id)):
-            error_message = "The Email id exists"
-            return render_template('register.html', error = error_message)
+        return render_template('search.html', error = "")
+    elif "email_id" in session:
+        error_message = ""
+        if request.method == 'POST':
+            location = request.form["location"]
+            if (location == "" ):
+                error_message = "Please enter a Location.."
+                response = ""
+            else:
+                response = search_meeting(location)
+                if len(response) < 1:
+                    error_message = "No results Found"
+            return render_template("searchResult.html", message = error_message, meetings = response, username=session["username"])
+            
+def search_meeting(location):
+        data = {
+            'FilterExpression' :  Attr('location').begins_with(location) & Attr('sort_key').begins_with("TITLE-")
+        }
+        search_lst = []
+        done = False
+        start_key = None
+        while not done:
+            if start_key:
+                data['ExclusiveStartKey'] = start_key
+            response = MeetingTable.scan(**data)
+            search_lst += (response.get('Items', []))
+            start_key = response.get('LastEvaluatedKey', None)
+            done = start_key is None
+        return search_lst
+    
+@app.route('/displayMeetings')
+def displayMeetings():
+    if "email_id" in session:
+        my_meetings = meetings_query(session["email_id"])
+        if len(my_meetings) < 1:
+            error_message = "You haven't joined to any meetings yet.."
+            return render_template('joinedMeetings.html', username=session["username"], message=error_message)
         else:
-            insert_user_login(email_id, password, username)
-            return redirect('login')
+            return render_template('joinedMeetings.html', username=session["username"],meetings = my_meetings)
+
+
+@app.route('/createdMeetings')
+def createdMeetings():
+    if "email_id" in session:
+        my_meetings = created_meetings_query(session["email_id"])
+        if len(my_meetings) < 1:
+            error_message = "You haven't created any meetings yet.."
+            return render_template('createdMeetings.html', username=session["username"], message=error_message)
+        else:
+            return render_template('createdMeetings.html', username=session["username"],meetings = my_meetings)
+
+
+def created_meetings_query(email):
+    response = MeetingTable.query(
+        KeyConditionExpression=Key('partition_key').eq("USER-"+email) & Key('sort_key').begins_with("TITLE-")
+    )
+    return response['Items']
+
 
 @app.route('/addMeeting', methods=['GET', 'POST'])
 def addMeeting():
     if request.method == 'GET':
-        return render_template('main.html')
+        return render_template('addMeeting.html')
     elif request.method == 'POST':
         url = 'https://ed7328j11j.execute-api.ap-southeast-2.amazonaws.com/default/addMeeting'
         # email=session["email_id"]
@@ -86,6 +131,7 @@ def addMeeting():
         data["limit"] = request.form["limit"]
         data["username"] = session["username"]
         img = request.files["meeting_image"]
+
         if not img:
             uploaded_image_url = "https://s3793275-assignment3.s3.ap-southeast-2.amazonaws.com/default.jpg"
         else:
@@ -114,48 +160,33 @@ def addMeeting_to_db(email,title,location,dateTime,limit, uploaded_image_url):
     )
     return response
 
-@app.route('/searchMeeting', methods=['GET', 'POST'])
-def search():
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html', error = "")
+    elif request.method == 'POST':
+        email_id = request.form["email"]
+        username = request.form["user_name"]
+        password = request.form["password"]
+        if(check_user(email_id)):
+            error_message = "The Email id exists !!"
+            return render_template('register.html', error = error_message)
+        else:
+            insert_user_login(email_id, password, username)
+            return redirect('login')
+
+
+@app.route('/main')
+def main():
     if "email_id" in session:
-        error_message = ""
-        if request.method == 'POST':
-            location = request.form["location"]
-            if (location == "" and title == ""):
-                error_message = "Please enter value"
-                response = ""
-            else:
-                response = search_meeting(location)
-                if len(response) < 1:
-                    error_message = "No result"
-            return render_template("main.html", message = error_message, meetings = response, username=session["username"])
+        if request.method == 'GET':
+            return render_template('main.html', username=session["username"])
+        elif request.method == 'POST':
+            return render_template('main.html', username=session["username"])
+    else:
+        return redirect('login')
 
-def search_meeting(location):
-
-    url = "https://m090rk6pfa.execute-api.ap-southeast-2.amazonaws.com/default/searchMeeting"
-    data = {}
-    data["location"] = location
-
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.post(url, data=json.dumps(data), headers=headers)
-    searchResult = json.loads((response.content).decode("utf-8"))
-    searchResult = searchResult["body"]
-    searchResult = json.loads(searchResult)
-    print (searchResult)
-    return searchResult        
-        # data = {
-        #     'FilterExpression' :  Attr('location').begins_with(location) & Attr('sort_key').begins_with("TITLE-")
-        # }
-        # search_lst = []
-        # done = False
-        # start_key = None
-        # while not done:
-        #     if start_key:
-        #         data['ExclusiveStartKey'] = start_key
-        #     response = MeetingTable.scan(**data)
-        #     search_lst += (response.get('Items', []))
-        #     start_key = response.get('LastEvaluatedKey', None)
-        #     done = start_key is None
-        # return search_lst
 
 @app.route('/join', methods=['POST'])
 def join():
@@ -166,7 +197,7 @@ def join():
 
             join_title = request.form["join_title"]
             if(user == session["username"]):
-                return render_template("main.html", message = "cannot join your own meeting", username=session["username"])
+                return render_template(".html", message = "cannot join your own meeting", username=session["username"])
             else:
                 joinMeeting(host, join_title)
                 return redirect('main')
@@ -182,45 +213,15 @@ def joinMeeting(email, title):
 
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     response = requests.post(url, data=json.dumps(data), headers=headers)
-    # joined = json.loads((response.content).decode("utf-8"))
-    # joined = joined["body"]
-    # joined = json.loads(joined)
-    # return joined
-
-    # response = MeetingTable.query(
-    #     KeyConditionExpression=Key('partition_key').eq("USER-"+email) & Key('sort_key').begins_with("JOIN-")
-    # )
     return response
 
 
-    # response = MeetingTable.query(
-    #     KeyConditionExpression=Key('partition_key').eq("USER-"+email) & Key('sort_key').eq("TITLE-"+title)
-    # )
-    # result = response['Items'][0]
-   
-    # response = MeetingTable.put_item(
-    #    Item={
-    #         'partition_key': "USER-"+session["email_id"],
-    #         'sort_key': "JOIN-"+title,
-    #         'location': result["location"],
-    #         'dateTime': result["dateTime"],
-    #         'createdby' : result["username"],
-    #         'img_url' : result["img_url"]
-    #     }
-    # )
-    # return response
+def meetings_query(email):
+    response = MeetingTable.query(
+        KeyConditionExpression=Key('partition_key').eq("USER-"+email) & Key('sort_key').begins_with("JOIN-")
+    )
+    return response['Items']
 
-
-@app.route('/main', methods=['GET', 'POST'])
-def main():
-    if "email_id" in session:
-        my_meetings = meetings_query(session["email_id"])
-        if request.method == 'GET':
-            return render_template('main.html', username=session["username"],my_meetings = my_meetings)
-        elif request.method == 'POST':
-            return render_template('main.html', username=session["username"])
-    else:
-        return redirect('login')
 
 def insert_user_login(email_id, password, username):
     response = loginTable.put_item(
@@ -231,23 +232,6 @@ def insert_user_login(email_id, password, username):
         }
     )
     return response
-
-def meetings_query(email):
-    url = "https://z9sp7c0h53.execute-api.ap-southeast-2.amazonaws.com/default/fetchMyMeetings"
-    data = {}
-    data["email_data"] = session["email_id"]
-
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.post(url, data=json.dumps(data), headers=headers)
-    joined = json.loads((response.content).decode("utf-8"))
-    joined = joined["body"]
-    joined = json.loads(joined)
-    # return joined
-
-    # response = MeetingTable.query(
-    #     KeyConditionExpression=Key('partition_key').eq("USER-"+email) & Key('sort_key').begins_with("JOIN-")
-    # )
-    return joined['Items']
 
 def check_user(email_id):
     response = loginTable.query(

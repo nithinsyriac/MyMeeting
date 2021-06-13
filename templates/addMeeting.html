@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Agency - Start Bootstrap Theme</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="{{ url_for('static', filename="js/main.js") }}"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename="styles/main.css") }}">
+        
+    </head>
+
+    <body>
+    <!-- Contact-->
+    <section class="page-section" id="contact">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-heading text-uppercase">Add Meeting</h2>
+                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
+            </div>
+            
+            <form action='/addMeeting' id="addMeetingForm" method='POST' enctype="multipart/form-data">
+                <!-- <div class="row align-items-stretch mb-5"> -->
+                    
+                        <div class="form-group">
+                            <!-- Name input-->
+                            <input class="form-control" id="title" type="text" name="title" placeholder="Title *" data-sb-validations="required" autocomplete="off"/>
+                            <div class="invalid-feedback" data-sb-feedback="title:required">A title is required.</div>
+                        </div></br>
+                        <div class="form-group">
+                            <!-- Email address input--> 
+                            <input class="form-control" id="location" name="location" type="text" placeholder="Location *" data-sb-validations="required" />
+                            <div class="invalid-feedback" data-sb-feedback="location:required">A location is required.</div>
+                        </div></br>
+                        <div class="form-group mb-md-0">
+                            <!-- Phone number input-->
+                            <input class="form-control" id="date" name="date" type="datetime-local"  placeholder="Date *" data-sb-validations="required" />
+                            <div class="invalid-feedback" data-sb-feedback="date:required">A Date is required.</div>
+                        </div></br>
+
+                        <div class="form-group mb-md-0">
+                            <!-- Phone number input-->
+                            <input class="form-control" id="limit" name="limit" type="number" placeholder="Limit *" data-sb-validations="required" />
+                            <div class="invalid-feedback" data-sb-feedback="Limit:required">A Limit is required.</div>
+                        </div></br>
+
+                        <div class="form-group mb-md-0">
+                            <!-- Phone number input-->
+                            <input class="form-control" id="meeting_image" name="meeting_image" type="file" placeholder="Uplaod Image *" data-sb-validations="required" />
+                            <div class="invalid-feedback" data-sb-feedback="Limit:required">An Image is required</div>
+                        </div></br>
+                    
+                    <!-- <div class="col-md-6"> -->
+                        
+                    </div>
+                </div>
+                
+                <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
+                <!-- Submit Button-->
+                <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase" id="submitButton" type="submit">Submit</button></div>
+            </form>
+        </div>
+    </section>
+   
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+    <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+    <!-- * *                               SB Forms JS                               * *-->
+    <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+    <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+</body>
+</html>

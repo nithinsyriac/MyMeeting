@@ -1,20 +1,189 @@
-{% extends 'loginBase.html' %}
+<!DOCTYPE html>
 
-{% block head %}
+<head>
+<meta charset="UTF-8">
 <title> Login </title>
-{% endblock %}
+<!-- <link href= "F:\RMIT UNIVERSITY\Semester 4\Cloud Computing\Bootstrap\NithinCloud2\css\login.css" rel ="stylesheet" type ="text/css"> -->
+</head>
+{% block body %} 
 
-{% block body %}
-    <form action='/login' method='POST'>
-        <h3> Subscribe Music </h3>
-        <label for="email">Email id:</label><br>
-        <input type="text" id="email" name="email" required><br><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Login"> &nbsp;
-        <a href="/register"> Register </a>
-    </form>
-    {% if error %} 
-        <p style="color: black; text-align: center; font-size: 35px;"> {{error}}</p> 
-    {% endif %}
+<style>
+   body {
+    background-image: url("/static/assets/header-bg.jpg");
+    font-family: 'Roboto', sans-serif;
+    background-size: 100%;
+}
+
+.login-box {
+    margin-top: 75px;
+    margin-left: 350px;
+    margin-right: 350px;
+    height: 450px;
+    background: #1A2226;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.login-key {
+    height: 50px;
+    font-size: 80px;
+    line-height: 100px;
+    background: -webkit-linear-gradient(#27EF9F, #0DB8DE);
+    /* -webkit-background-clip: text; */
+    -webkit-text-fill-color: transparent;
+}
+
+.login-title {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 30px;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #ECF0F5;
+}
+
+.login-form {
+    margin-top: 25px;
+    text-align: left;
+    margin-left: 60px;
+}
+
+input[type=text] {
+    width :75%;
+    background-color: #1A2226;
+    border: none;
+    border-bottom: 2px solid #0DB8DE;
+    border-top: 0px;
+    border-radius: 0px;
+    font-weight: bold;
+    outline: 0;
+    margin-bottom: 20px;
+    padding-left: 0px;
+    color: #ECF0F5;
+}
+
+input[type=password] {
+    background-color: #1A2226;
+    border: none;
+    width :75%;
+    border-bottom: 2px solid #0DB8DE;
+    border-top: 0px;
+    border-radius: 0px;
+    font-weight: bold;
+    outline: 0;
+    padding-left: 0px;
+    margin-bottom: 20px;
+    color: #ECF0F5;
+}
+
+.form-group {
+    margin-bottom: 40px;
+    outline: 0px;
+}
+
+.form-control:focus {
+    border-color: inherit;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-bottom: 2px solid #0DB8DE;
+    outline: 0;
+    background-color: #1A2226;
+    color: #ECF0F5;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0;
+}
+
+label {
+    margin-bottom: 0px;
+}
+
+.form-control-label {
+    font-size: 10px;
+    color: #6C6C6C;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.btn-outline-primary {
+    border-color: #0DB8DE;
+    color: #1A2226;
+    border-radius: 0px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.btn-outline-primary:hover {
+    background-color: #0DB8DE;
+    right: 0px;
+}
+
+.login-btm {
+    float: left;
+}
+
+.login-button {
+    padding-right: 0px;
+    text-align: right;
+    font-size: 10px;
+    margin-bottom: 20px;
+}
+
+.login-text {
+    text-align: left;
+    padding-left: 0px;
+    color: #1A2226;
+    font-size: 30px;
+}
+
+.loginbttm {
+    padding: 0px;
+}
+</style>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8 login-box">
+            <div class="col-lg-12 login-key">
+                <i class="fa fa-key" aria-hidden="true"></i>
+            </div>
+            <div class="col-lg-12 login-title">
+                LOGIN
+            </div>
+
+            <div class="col-lg-12 login-form">
+                <div class="col-lg-12 login-form">
+                    <form action='/login' method='POST'>
+                        <div class="form-group">
+                            <label class="form-control-label">USERNAME</label><br/><br/>
+                            <input type="text" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label">PASSWORD</label><br/><br/>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="col-lg-12 loginbttm">
+                            <div class="col-lg-6 login-btm login-text">
+                                <!-- Error Message -->
+                            </div>
+                            <div class="col-lg-6 login-btm login-button">
+                                <button type="submit" class="btn btn-outline-primary">LOGIN</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <h5 style="color:rgb(245, 248, 248);">New User?.. <a href="/register" style="color:rgb(80, 246, 252);">Register Here</a></h5>
+            <div class="col-lg-3 col-md-2"></div>
+        </div>
+    </div>
+</div>
+</body>
 {% endblock %}
+<html>

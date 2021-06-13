@@ -1,0 +1,106 @@
+<html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <meta name="description" content="" />
+      <meta name="author" content="" />
+      <title>Agency - Start Bootstrap Theme</title>
+      <!-- Favicon-->
+      <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+      <!-- Font Awesome icons (free version)-->
+      <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="{{ url_for('static', filename="js/main.js") }}"></script>
+      <!-- Google fonts-->
+      <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+      <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+      <!-- Core theme CSS (includes Bootstrap)-->
+      <link href="css/styles.css" rel="stylesheet" />
+      <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename="styles/main.css") }}">
+      <script src="{{ url_for('static', filename="js/searchResults.js") }}"></script>
+      <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename="styles/searchResults.css") }}">
+    </head>
+
+ <style>  
+    .avatar {
+      vertical-align: middle;
+      width: 70px;
+      height: 70px;    
+  }
+</style>
+
+{% block body %}
+
+<div class="container">
+<div class="jumbotron mt-3">
+
+<div>   
+<h1>Location Search Results</h1>
+<br/>
+</div>
+
+{% if message %}
+    <h4 style="color: rgb(254, 255, 255); font-size: 55px;">{{message}}</h4>
+    <br/>
+{% else %}
+<body class="hm-gradient">  
+  <main>  
+      <!--MDB Tables-->
+      <div class="container mt-4">
+          <div class="card mb-4">
+              <div class="card-body">
+                  <!--Table-->
+                  <div class="table-wrap">
+      <div class="table-wrap">
+        <table class="table table-striped" style="width:100%">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Created by</th>
+            <th scope="col">Location</th>
+            <th scope="col">Date</th>
+            <th scope="col">Image</th>
+            <th scope="col">Join</th>
+          </tr>
+        </thead>
+        <tbody>	
+
+      {% for result in meetings %}
+      <form action='/join' method='POST'>
+          {% set meeting_title = (result["sort_key"])[6:] %}
+          {% set host_email = (result["partition_key"])[5:] %}
+
+          <input type="hidden" name="user" value="{{ result.username }}" />
+          <input type="hidden" name="join_title" value="{{ meeting_title }}" />
+          <input type="hidden" name="join_host" value="{{ host_email }}" />
+
+            <tr>
+            <td scope="row">{{meeting_title}}</td>
+            <td name="user" scope="row">{{result["username"]}}</td>
+            <td scope="row">{{result["location"]}}</td>
+            <td scope="row">{{result["dateTime"]}}</td>
+            <td scope="row"><img src={{result.img_url}} alt="Avatar" class="avatar"></td>
+            {%set un=result.username %}
+            {% if username == un %}
+              <td>None</td>
+            {% else %}
+              <td><button type="submit" style="color: black;">Join</button></td>
+            {% endif %}
+            
+            </tr>
+      </form>
+      {% endfor %}
+          </tbody>                     
+          </table>                 
+          </div>
+          </div>      
+      </div>
+      <!--MDB Tables-->
+  </main>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+</html>
+
+

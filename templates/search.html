@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="colorlib.com">
+    <script src="{{ url_for('static', filename="js/main.js") }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet" />
+    <link href="css/search.css" rel="stylesheet" />
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename="styles/search.css") }}">
+  </head>
+
+<style>
+    body{
+    min-height: 100vh;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+        justify-content: center;
+    -ms-flex-align: center;
+        align-items: center;
+    font-family: 'Poppins', sans-serif;
+    background: url("/static/assets/header-bg.jpg");
+    background-size: cover;
+    background-position: center center;
+    padding: 15px;
+  }
+</style>
+
+  <body>
+    <div class="s004">
+      <form action="/searchMeeting" method="POST">
+        
+        <legend>Search meetings in your location</legend>
+            <div class="form-group">
+              <input class="form-control" id="location" type="text" name="location" data-sb-validations="required" autocomplete="off" type="text" placeholder="Type to search..." required/>
+              <button  type="submit">Search</button>
+              </button>
+            </div>
+         
+      </form>
+    </div>
+   
+  </body><!-- This templates was made by Colorlib (https://colorlib.com)
+</html>
